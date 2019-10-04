@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<title>Welcome!</title>
+
+<h1>Welcome</h1>
+
+<div th:object="${user}">
+
+    Hello <span th:text="${user.name}"></span>, you won't see this page unless you're logged in.
+
+    <div>
+        <a href="/logout">log out</a>
+    </div>
+
+</div>
+</html>

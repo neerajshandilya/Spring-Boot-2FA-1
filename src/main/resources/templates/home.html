@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<title>Welcome!</title>
+
+<h1>Welcome</h1>
+
+<div>
+
+    <div th:if="${user}">
+        <div>
+            Hello <span th:text="${user.name}"></span>. Here's <a href="/user/home">a page that only logged-in people can see</a>.
+        </div>
+        <div>
+            <a href="/logout">log out</a>
+        </div>
+    </div>
+
+    <div th:unless="${user}">
+        <div>
+            Log in to use this site
+        </div>
+        <div>
+            <a href="/user/registration">Sign Up</a>
+            <a href="/login">Login</a>
+        </div>
+    </div>
+
+</div>
+</html>
