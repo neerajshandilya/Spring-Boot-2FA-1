@@ -22,6 +22,8 @@ public class UserDto {
     @NotEmpty
     private String password;
 
+    private String superSecretSecret;
+
     public String getUsername() {
         return username;
     }
@@ -38,12 +40,21 @@ public class UserDto {
         this.password = password;
     }
 
+    public String getSuperSecretSecret() {
+        return superSecretSecret;
+    }
+
+    public void setSuperSecretSecret(String superSecretSecret) {
+        this.superSecretSecret = superSecretSecret;
+    }
+
     @Override
     public String toString() {
         return "UserDto{" +
             "id=" + id +
             ", username='" + username + '\'' +
             ", password='" + password + '\'' +
+            ", twofakey='" + superSecretSecret + '\'' +
             '}';
     }
 }

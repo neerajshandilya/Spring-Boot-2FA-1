@@ -1,5 +1,6 @@
 package lol.gilliard.springboot2fa;
 
+import com.amdelamar.jotp.OTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -26,6 +27,7 @@ public class UserService implements UserDetailsService {
         User newUser = new User(userDto.getUsername(), userDto.getPassword(), Collections.singletonList(new SimpleGrantedAuthority("USER")));
 
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        userDto.setSuperSecretSecret(OTP.randomBase32(20));
 
         userRepository.save(userDto);
     }
@@ -34,8 +36,9 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDto userDto = userRepository.findByUsername(username);
 
-        if (userDto == null) return null;
+        if (userDto == null) throw new UsernameNotFoundException("Username " + username + " not found");
 
         return new UserPrincipal(userDto);
     }
+
 }
