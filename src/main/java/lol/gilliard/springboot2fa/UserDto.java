@@ -22,6 +22,8 @@ public class UserDto {
     @NotEmpty
     private String password;
 
+    private String twofakey;
+
     public String getUsername() {
         return username;
     }
@@ -38,12 +40,21 @@ public class UserDto {
         this.password = password;
     }
 
+    public String getTwofakey() {
+        return twofakey;
+    }
+
+    public void setTwofakey(String twofakey) {
+        this.twofakey = twofakey;
+    }
+
     @Override
     public String toString() {
         return "UserDto{" +
             "id=" + id +
             ", username='" + username + '\'' +
             ", password='" + password + '\'' +
+            ", twofakey='" + twofakey + '\'' +
             '}';
     }
 }

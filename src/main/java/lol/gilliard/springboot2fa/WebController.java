@@ -1,8 +1,11 @@
 package lol.gilliard.springboot2fa;
 
+import com.amdelamar.jotp.OTP;
+import com.amdelamar.jotp.type.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 
 @Controller
@@ -42,10 +47,14 @@ public class WebController {
     @PostMapping("/user/registration")
     public ModelAndView registerNewUser(@ModelAttribute("user") @Valid UserDto userDto, BindingResult result, RedirectAttributes redirect){
 
-        if (userService.loadUserByUsername(userDto.getUsername()) != null){
+        try {
+            userService.loadUserByUsername(userDto.getUsername());
             logger.warn("Attempt to register existing user username: {}", userDto.getUsername());
             result.rejectValue("username", "already.exists");
             return new ModelAndView("registration", "user", userDto);
+
+        } catch (UsernameNotFoundException e) {
+            // Good. Carry on.
         }
 
         if (result.hasErrors()){
@@ -54,8 +63,25 @@ public class WebController {
 
         userService.createNewUser(userDto);
 
-        redirect.addFlashAttribute("usermsg", "Thanks for registering - now you can log in");
-        return new ModelAndView("redirect:/login");
+        redirect.addFlashAttribute("user", userDto);
+        return new ModelAndView("redirect:/user/2fa");
+    }
+
+    @RequestMapping("/user/2fa")
+    public String setUpUser2FA(Model model, Principal principal) throws UnsupportedEncodingException {
+        UserDto user = (UserDto) (model.asMap().get("user"));
+        if (user == null){
+            return "redirect:/user/registration";
+        }
+
+        String otpUrl = OTP.getURL(user.getTwofakey(), 6, Type.TOTP, "spring-boot-2fa-demo", user.getUsername());
+
+        String twoFaQrUrl = String.format(
+            "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=%s",
+            URLEncoder.encode(otpUrl, "UTF-8"));
+
+        model.addAttribute("twoFaQrUrl", twoFaQrUrl);
+        return "2faReg";
     }
 
     @RequestMapping("/login")

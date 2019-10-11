@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<title>2FA setup</title>
+
+<h1>2FA setup</h1>
+
+<p>Hello <span th:text="${user.username}"></span>!
+Point your Authenticator app at this QR code to add 2FA codes for this spring-boot demo:
+    <div>
+        <img th:src="${twoFaQrUrl}"/>
+    </div>
+Then you can <a href="/login">log in</a>.
+</p>
+
+</html>
